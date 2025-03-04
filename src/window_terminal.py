@@ -1,6 +1,7 @@
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, Qt
+from PyQt6.QtGui import QKeyEvent
 from PyQt6.QtWidgets import (
-    QWidget, QPushButton, QVBoxLayout, 
+    QWidget, QPushButton, QVBoxLayout,
     QHBoxLayout, QTextEdit, QLineEdit,
 )
 
@@ -43,12 +44,21 @@ class TerminalWindow(QWidget):
         
         self.send_command_signal.connect(self.serial_worker.send_data)
 
+        # Access history with up/down keys
+        self.command_history = []  # Stores past commands
+        self.history_index = -1  # Tracks current position in history
+
     def send_command(self):
         command = self.input_field.text().strip()
         if not command:
             return
 
         self.update_terminal(f"> {command}")
+
+        # Add command to history and reset index
+        self.command_history.append(command)
+        self.history_index = len(self.command_history)
+        
         self.input_field.clear()
 
         # WARNING: Special commands in case you need them. You can add/remove/hack the code
@@ -80,6 +90,21 @@ class TerminalWindow(QWidget):
 
     def update_terminal(self, message):
         self.terminal_output.append(message)
+
+    def keyPressEvent(self, event: QKeyEvent):
+        if event.key() == Qt.Key.Key_Up:
+            if self.history_index > 0:
+                self.history_index -= 1
+                self.input_field.setText(self.command_history[self.history_index])
+        elif event.key() == Qt.Key.Key_Down:
+            if self.history_index < len(self.command_history) - 1:
+                self.history_index += 1
+                self.input_field.setText(self.command_history[self.history_index])
+            else:
+                self.history_index = len(self.command_history)
+                self.input_field.clear()
+        else:
+            super().keyPressEvent(event)
 
     def closeEvent(self, event):
         self.serial_worker.disconnect_serial()
