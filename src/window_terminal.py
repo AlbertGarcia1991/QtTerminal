@@ -82,5 +82,6 @@ class TerminalWindow(QWidget):
         self.terminal_output.append(message)
 
     def closeEvent(self, event):
+        self.serial_worker.disconnect_serial()
         self.control_panel_window.close()  # Close the Control Panel
         event.accept()
