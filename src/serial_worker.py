@@ -1,7 +1,8 @@
-from datetime import datetime
 import os
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
+
+from utils import generate_timestamp
 
 
 class SerialWorker(QObject):
@@ -41,22 +42,13 @@ class SerialWorker(QObject):
             self.log_filename = None
             self.data_received.emit("Disconnected from serial device.")
 
-    def generate_timestamp():
-        """
-        Generates a timestamp string in the format 'yyy-MM-dd-hh-mm-ss'.
-        
-        Returns:
-            str: The formatted timestamp.
-        """
-        return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-
     def create_log_file(self):
         """
         Logfile will be saved as 'log_PORT_TIMESTAMP.txt', where:
             - PORT is the comm port connected, replacing OS-specific filesystem separator with '-'
             - TIMESTAMP has the format YYYY-mm-dd-HH-MM-SS
         """
-        self.log_filename = f'log_{self.port.replace(os.path.sep, '-')}_{self.generate_timestamp()}.txt'
+        self.log_filename = f'log_{self.port.replace(os.path.sep, '-')}_{generate_timestamp()}.txt'
         with open(f'logs/{self.log_filename}', "w+") as f:
             pass
 
