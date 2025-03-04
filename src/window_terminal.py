@@ -17,6 +17,7 @@ class TerminalWindow(QWidget):
         super().__init__()
         self.setWindowTitle("Terminal")
         self.setGeometry(600, 100, 500, 400)
+        self.control_panel_window = None
         
         self.layout = QVBoxLayout()
 
@@ -79,3 +80,7 @@ class TerminalWindow(QWidget):
 
     def update_terminal(self, message):
         self.terminal_output.append(message)
+
+    def closeEvent(self, event):
+        self.control_panel_window.close()  # Close the Control Panel
+        event.accept()

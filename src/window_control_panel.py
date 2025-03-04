@@ -11,6 +11,7 @@ class ControlPanelWindow(QWidget):
         super().__init__()
         self.setWindowTitle("Control Panel")
         self.setGeometry(100, 100, 300, 300)
+        self.terminal_window = terminal_window
 
         self.layout = QGridLayout()
 
@@ -27,7 +28,6 @@ class ControlPanelWindow(QWidget):
 
         self.init_ui()
         self.setLayout(self.layout)
-        self.terminal_window = terminal_window
 
     def init_ui(self):
         for i in range(6):
@@ -36,7 +36,10 @@ class ControlPanelWindow(QWidget):
             self.buttons.append(button)
             self.layout.addWidget(button, i // 2, i % 2)
 
-
     def send_command(self, command):
         self.terminal_window.update_terminal(f"> {command}")
         self.terminal_window.send_command_signal.emit(command)
+
+    def closeEvent(self, event):
+        self.terminal_window.close()  # Close the Terminal
+        event.accept()

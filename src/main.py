@@ -17,6 +17,7 @@ class MainApplication:
 
         self.terminal_window = TerminalWindow()
         self.control_panel_window = ControlPanelWindow(self.terminal_window)
+        self.terminal_window.control_panel_window = self.control_panel_window
 
         self.terminal_window.show()
         self.control_panel_window.show()
